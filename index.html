@@ -332,16 +332,17 @@
         var datosInforme = null;
         
         // ============================================================
-        // LEER DATOS DE LA URL (ACTUALIZADO)
+        // LEER DATOS DE LA URL (ADAPTADO PARA NUEVA ESTRUCTURA)
         // ============================================================
         function leerDatosURL() {
             var urlParams = getUrlParams();
             
-            // Parsear egresos
+            // Parsear egresos con la NUEVA ESTRUCTURA
             var egresosRaw = urlParams['egresos'] || '[]';
             var egresos = [];
             try {
                 egresos = JSON.parse(egresosRaw);
+                console.log('📋 Egresos parseados:', egresos);
             } catch (e) {
                 console.error('Error al parsear egresos:', e);
                 egresos = [];
@@ -371,11 +372,11 @@
                     registrosARC: parseInt(urlParams['recaudo_registros_arc']) || 0
                 },
                 
-                // ===== EGRESOS =====
+                // ===== EGRESOS (NUEVA ESTRUCTURA) =====
                 egresos: egresos,
                 totalEgresos: parseFloat(urlParams['total_egresos']) || 0,
                 
-                // ===== ESTADÍSTICAS (NUEVO) =====
+                // ===== ESTADÍSTICAS =====
                 estadisticas: {
                     clientesAtendidos: parseInt(urlParams['est_clientes_atendidos']) || 0,
                     promedioCobro: parseFloat(urlParams['est_promedio_cobro']) || 0,
@@ -398,7 +399,7 @@
         }
         
         // ============================================================
-        // MOSTRAR RESUMEN DEL INFORME (ACTUALIZADO)
+        // MOSTRAR RESUMEN DEL INFORME
         // ============================================================
         function mostrarResumen() {
             var container = document.getElementById('infoResumen');
@@ -423,13 +424,13 @@
                     <span><strong>🏦 TOTAL:</strong> <span style="color:#6f42c1; font-weight:bold;">${totalGeneral}</span></span>
                 </div>
                 
-                <!-- FILA 3: Facturación -->
+                <!-- FILA 3: Facturación y Cobros -->
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-top:4px;">
                     <span><strong>📄 FACTURACIÓN:</strong> <span style="color:#1a472a;">${facturacion}</span></span>
                     <span><strong>📝 COBROS:</strong> <span style="color:#8b5cf6;">${datosInforme.estadisticas.totalCobros || 0}</span></span>
                 </div>
                 
-                <!-- FILA 4: Estadísticas (NUEVO) -->
+                <!-- FILA 4: Estadísticas -->
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-top:4px; padding-top:6px; border-top:1px solid #e2e8f0;">
                     <span><strong>👥 CLIENTES:</strong> <span style="color:#8b5cf6;">${datosInforme.estadisticas.clientesAtendidos || 0}</span></span>
                     <span><strong>📊 PROMEDIO:</strong> <span style="color:#8b5cf6;">${promedio}</span></span>
@@ -445,7 +446,7 @@
         }
         
         // ============================================================
-        // GENERAR TICKET DEL INFORME DIARIO (ACTUALIZADO)
+        // GENERAR TICKET DEL INFORME DIARIO (ADAPTADO PARA NUEVA ESTRUCTURA)
         // ============================================================
         function generarTicketInforme() {
             var ancho = 48;
@@ -480,7 +481,7 @@
             t += padRight('  TOTAL RECAUDO', 28) + padLeft(formatearMonto(datosInforme.recaudo.total), 20) + '\n';
             t += '_'.repeat(ancho) + '\n\n';
             
-            // ========== EGRESOS DEL DÍA ==========
+            // ========== EGRESOS DEL DÍA (ADAPTADO) ==========
             t += centerText('💸 EGRESOS DEL DÍA', ancho) + '\n';
             t += '─'.repeat(ancho) + '\n';
             
@@ -489,27 +490,62 @@
             } else {
                 for (var i = 0; i < datosInforme.egresos.length; i++) {
                     var egreso = datosInforme.egresos[i];
-                    var nombre = egreso.nombre || egreso.codigo || 'Sin nombre';
-                    var monto = egreso.monto || 0;
-                    var desc = egreso.descripcion || '';
-                    var codigo = egreso.codigo || egreso.cod1 || '';
-                    var trabajador = egreso.trabajador || 'Sistema';
+                    var codigo = egreso.codigo || '';
+                    var nombre = egreso.nombre || 'Sin nombre';
+                    var montoTotal = egreso.montoTotal || 0;
+                    var trabajadores = egreso.trabajadores || [];
                     
-                    t += padRight('  ' + codigo + ' - ' + nombre, 28) + padLeft(formatearMonto(monto), 20) + '\n';
-                    t += padRight('    (' + trabajador + ')', 28) + padLeft('', 20) + '\n';
-                    if (desc) {
-                        var lineas = wrapText('     ' + desc, ancho - 4);
-                        for (var j = 0; j < lineas.length; j++) {
-                            t += '  ' + lineas[j] + '\n';
+                    // ===== CABECERA DEL CÓDIGO =====
+                    t += '  ' + codigo + ' - ' + nombre + '\n';
+                    t += '  ' + '─'.repeat(ancho - 4) + '\n';
+                    
+                    // ===== RECORRER CADA TRABAJADOR =====
+                    if (trabajadores.length === 0) {
+                        t += padRight('    SIN TRABAJADOR ASIGNADO', ancho - 2) + '\n';
+                        t += padRight('    Total: ' + formatearMonto(montoTotal), ancho - 2) + '\n';
+                    } else {
+                        for (var j = 0; j < trabajadores.length; j++) {
+                            var trabajador = trabajadores[j];
+                            var nombreTrabajador = trabajador.nombre || 'SIN TRABAJADOR';
+                            var montoTrabajador = trabajador.monto || 0;
+                            var registros = trabajador.registros || [];
+                            var descripcionTrabajador = trabajador.descripcion || '';
+                            
+                            // Mostrar trabajador con su total
+                            t += padRight('    ' + nombreTrabajador, 28) + padLeft(formatearMonto(montoTrabajador), 20) + '\n';
+                            
+                            // Mostrar cada registro individual
+                            if (registros.length > 0) {
+                                for (var k = 0; k < registros.length; k++) {
+                                    var reg = registros[k];
+                                    var montoReg = reg.monto || 0;
+                                    var descReg = reg.descripcion || '';
+                                    
+                                    // Mostrar el detalle con sangría
+                                    var detalle = '      • ' + formatearMonto(montoReg);
+                                    if (descReg) {
+                                        detalle += ' - ' + descReg;
+                                    }
+                                    t += padRight(detalle, ancho - 2) + '\n';
+                                }
+                            } else if (descripcionTrabajador) {
+                                // Si no hay registros pero hay descripción
+                                t += padRight('      ' + descripcionTrabajador, ancho - 2) + '\n';
+                            }
                         }
                     }
+                    
+                    // ===== TOTAL DEL CÓDIGO =====
+                    t += '  ' + '─'.repeat(ancho - 4) + '\n';
+                    t += padRight('  TOTAL ' + codigo, 28) + padLeft(formatearMonto(montoTotal), 20) + '\n';
+                    t += '\n';
                 }
             }
             t += '─'.repeat(ancho) + '\n';
             t += padRight('  TOTAL EGRESOS', 28) + padLeft(formatearMonto(datosInforme.totalEgresos), 20) + '\n';
             t += '_'.repeat(ancho) + '\n\n';
             
-            // ========== ESTADÍSTICAS (NUEVO) ==========
+            // ========== ESTADÍSTICAS ==========
             t += centerText('📊 ESTADÍSTICAS DEL DÍA', ancho) + '\n';
             t += '─'.repeat(ancho) + '\n';
             t += padRight('  Clientes atendidos', 28) + padLeft(String(datosInforme.estadisticas.clientesAtendidos || 0), 20) + '\n';
