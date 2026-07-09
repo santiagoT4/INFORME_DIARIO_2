@@ -462,12 +462,12 @@
             // ========== VENTAS DEL DÍA ==========
             t += centerText('📊 VENTAS DEL DÍA', ancho) + '\n';
             t += '─'.repeat(ancho) + '\n';
-            t += padRight('  FACTURACIÓN', 28) + padLeft(formatearMonto(datosInforme.ventas.facturacion), 20) + '\n';
+            t += padRight('  FACTURACIÓN', 28) + padLeft(formatearMonto(datosInforme.ventas.facturacion), 20) + '\n\n';
             t += padRight('  VENTA PEREIRA', 28) + padLeft(formatearMonto(datosInforme.ventas.pereira), 20) + '\n';
             t += padRight('  VENTA MANIZALES', 28) + padLeft(formatearMonto(datosInforme.ventas.manizales), 20) + '\n';
             t += padRight('  VENTA SUPIA', 28) + padLeft(formatearMonto(datosInforme.ventas.supia), 20) + '\n';
             t += '─'.repeat(ancho) + '\n';
-            t += padRight('  TOTAL VENTA DIA', 28) + padLeft(formatearMonto(datosInforme.ventas.total), 20) + '\n';
+            t += padRight('  NUMERO DE VENTAS', 28) + padLeft(String(datosInforme.ventas.total), 20) + '\n';
             t += '_'.repeat(ancho) + '\n\n';
             
             // ========== RECAUDO DEL DÍA ==========
@@ -546,23 +546,23 @@
             t += '_'.repeat(ancho) + '\n\n';
             
             // ========== ESTADÍSTICAS ==========
-            t += centerText('📊 ESTADÍSTICAS DEL DÍA', ancho) + '\n';
-            t += '─'.repeat(ancho) + '\n';
-            t += padRight('  Clientes atendidos', 28) + padLeft(String(datosInforme.estadisticas.clientesAtendidos || 0), 20) + '\n';
-            t += padRight('  Promedio por cobro', 28) + padLeft(formatearMonto(datosInforme.estadisticas.promedioCobro || 0), 20) + '\n';
-            t += padRight('  Total transacciones', 28) + padLeft(String(datosInforme.estadisticas.totalCobros || 0), 20) + '\n';
-            t += padRight('  Total monto cobrado', 28) + padLeft(formatearMonto(datosInforme.estadisticas.totalMonto || 0), 20) + '\n';
-            t += '_'.repeat(ancho) + '\n\n';
+            //t += centerText('📊 ESTADÍSTICAS DEL DÍA', ancho) + '\n';
+            //t += '─'.repeat(ancho) + '\n';
+            //t += padRight('  Clientes atendidos', 28) + padLeft(String(datosInforme.estadisticas.clientesAtendidos || 0), 20) + '\n';
+            //t += padRight('  Promedio por cobro', 28) + padLeft(formatearMonto(datosInforme.estadisticas.promedioCobro || 0), 20) + '\n';
+            //t += padRight('  Total transacciones', 28) + padLeft(String(datosInforme.estadisticas.totalCobros || 0), 20) + '\n';
+            //t += padRight('  Total monto cobrado', 28) + padLeft(formatearMonto(datosInforme.estadisticas.totalMonto || 0), 20) + '\n';
+            //t += '_'.repeat(ancho) + '\n\n';
             
             // ========== TOTAL GENERAL ==========
             t += centerText('🏦 TOTAL GENERAL', ancho) + '\n';
             t += '═'.repeat(ancho) + '\n';
-            t += padRight('  TOTAL INGRESOS', 28) + padLeft(formatearMonto(datosInforme.totalIngresos), 20) + '\n';
+            t += padRight('  TOTAL INGRESOS(NETO)', 28) + padLeft(formatearMonto(datosInforme.totalIngresos), 20) + '\n';
             t += '═'.repeat(ancho) + '\n\n';
             
             // ========== FIRMAS ==========
-            t += centerText('FIRMAS DE AUTORIZACIÓN', ancho) + '\n';
-            t += '_'.repeat(ancho) + '\n\n\n';
+            t += centerText('FIRMAS DE AUTORIZACIÓN', ancho) + '\n\n\n\n';
+            //t += '_'.repeat(ancho) + '\n\n\n';
             
             t += centerText('________________________________________', ancho) + '\n';
             t += centerText('FIRMA QUIEN RECIBE', ancho) + '\n\n';
