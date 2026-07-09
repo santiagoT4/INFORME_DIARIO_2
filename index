@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>SICSa - Informe Diario de Caja</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: #e8ecf1;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+        
+        .paper {
+            max-width: 480px;
+            width: 100%;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            overflow: hidden;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1a472a 0%, #0e2a1a 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 20px;
+            margin-bottom: 4px;
+            letter-spacing: 1px;
+        }
+        
+        .header p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .header .fecha {
+            font-size: 14px;
+            margin-top: 8px;
+            opacity: 0.85;
+            font-weight: bold;
+        }
+        
+        .content {
+            padding: 20px;
+        }
+        
+        .info-card {
+            background: #f0fdf4;
+            border-left: 4px solid #1a472a;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+        
+        .info-card p {
+            margin: 4px 0;
+        }
+        
+        .ticket-preview {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 500px;
+            overflow: auto;
+        }
+        
+        .ticket-preview::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .ticket-preview::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+        
+        .ticket-preview::-webkit-scrollbar-thumb {
+            background: #1a472a;
+            border-radius: 10px;
+        }
+        
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 10px;
+        }
+        
+        button:active {
+            transform: scale(0.97);
+        }
+        
+        .btn-primary {
+            background: #1a472a;
+            color: white;
+            box-shadow: 0 2px 8px rgba(26,71,42,0.3);
+        }
+        
+        .btn-primary:hover {
+            background: #0e2a1a;
+        }
+        
+        .btn-secondary {
+            background: #64748b;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #475569;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .flex-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .flex-buttons button {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        
+        .status {
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 12px;
+        }
+        
+        .status-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .status-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .status-error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .status-warning {
+            background: #fed7aa;
+            color: #9a3412;
+        }
+        
+        hr {
+            margin: 16px 0;
+            border: none;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .footer {
+            text-align: center;
+            font-size: 10px;
+            color: #94a3b8;
+            padding: 16px 20px;
+            background: #f8fafc;
+        }
+        
+        .badge-tipo {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .badge-venta {
+            background: #1a472a;
+        }
+        
+        .badge-recaudo {
+            background: #0d6efd;
+        }
+        
+        .badge-egreso {
+            background: #dc3545;
+        }
+        
+        .badge-total {
+            background: #6f42c1;
+        }
+        
+        .badge-estadistica {
+            background: #8b5cf6;
+        }
+        
+        .resumen-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 12px;
+            font-size: 12px;
+        }
+        
+        .resumen-grid .label {
+            color: #64748b;
+        }
+        
+        .resumen-grid .value {
+            font-weight: 600;
+            text-align: right;
+        }
+        
+        .resumen-grid .value.venta {
+            color: #1a472a;
+        }
+        
+        .resumen-grid .value.recaudo {
+            color: #0d6efd;
+        }
+        
+        .resumen-grid .value.egreso {
+            color: #dc3545;
+        }
+        
+        .resumen-grid .value.total {
+            color: #6f42c1;
+            font-size: 14px;
+        }
+        
+        .resumen-grid .value.estadistica {
+            color: #8b5cf6;
+        }
+    </style>
+</head>
+<body>
+    <div class="paper">
+        <div class="header">
+            <h1>🏦 SICSa</h1>
+            <p>Informe Diario de Caja Menor</p>
+            <div class="fecha" id="fechaHeader">📅 Cargando fecha...</div>
+        </div>
+        
+        <div class="content">
+            <div id="infoResumen" class="info-card">
+                <p>📄 Cargando información del día...</p>
+            </div>
+            
+            <div id="ticketPreview" class="ticket-preview">
+                ⏳ Generando informe diario...
+            </div>
+            
+            <button id="btnImprimir" class="btn-primary">🖨️ IMPRIMIR INFORME</button>
+            
+            <div class="flex-buttons">
+                <button id="btnCopiar" class="btn-secondary">📋 COPIAR</button>
+                <button id="btnCerrar" class="btn-danger">❌ CERRAR</button>
+            </div>
+            
+            <div id="status" class="status status-info">
+                ⚪ Listo para imprimir
+            </div>
+        </div>
+        
+        <div class="footer">
+            Conecta tu impresora en RawBT | PIN: 0000
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // FUNCIÓN PARA OBTENER PARÁMETROS DE URL (SIN URLSearchParams)
+        // ============================================================
+        function getUrlParams() {
+            var params = {};
+            var query = window.location.search.substring(1);
+            if (query) {
+                var pairs = query.split('&');
+                for (var i = 0; i < pairs.length; i++) {
+                    var pair = pairs[i].split('=');
+                    var key = decodeURIComponent(pair[0]);
+                    var value = decodeURIComponent(pair[1] || '');
+                    params[key] = value;
+                }
+            }
+            return params;
+        }
+        
+        // ============================================================
+        // VARIABLES GLOBALES
+        // ============================================================
+        var ticketTexto = '';
+        var datosInforme = null;
+        
+        // ============================================================
+        // LEER DATOS DE LA URL (ACTUALIZADO)
+        // ============================================================
+        function leerDatosURL() {
+            var urlParams = getUrlParams();
+            
+            // Parsear egresos
+            var egresosRaw = urlParams['egresos'] || '[]';
+            var egresos = [];
+            try {
+                egresos = JSON.parse(egresosRaw);
+            } catch (e) {
+                console.error('Error al parsear egresos:', e);
+                egresos = [];
+            }
+            
+            // ========== ESTRUCTURA COMPLETA DE DATOS ==========
+            datosInforme = {
+                // Fecha
+                fecha: urlParams['fecha'] || new Date().toLocaleDateString(),
+                
+                // ===== VENTAS =====
+                ventas: {
+                    facturacion: parseFloat(urlParams['venta_facturacion']) || 0,
+                    ventas: parseFloat(urlParams['venta_ventas']) || 0,
+                    pereira: parseFloat(urlParams['venta_pereira']) || 0,
+                    manizales: parseFloat(urlParams['venta_manizales']) || 0,
+                    supia: parseFloat(urlParams['venta_supia']) || 0,
+                    total: parseFloat(urlParams['venta_total']) || 0
+                },
+                
+                // ===== RECAUDO =====
+                recaudo: {
+                    abc: parseFloat(urlParams['recaudo_abc']) || 0,
+                    arc: parseFloat(urlParams['recaudo_arc']) || 0,
+                    total: parseFloat(urlParams['recaudo_total']) || 0,
+                    registrosABC: parseInt(urlParams['recaudo_registros_abc']) || 0,
+                    registrosARC: parseInt(urlParams['recaudo_registros_arc']) || 0
+                },
+                
+                // ===== EGRESOS =====
+                egresos: egresos,
+                totalEgresos: parseFloat(urlParams['total_egresos']) || 0,
+                
+                // ===== ESTADÍSTICAS (NUEVO) =====
+                estadisticas: {
+                    clientesAtendidos: parseInt(urlParams['est_clientes_atendidos']) || 0,
+                    promedioCobro: parseFloat(urlParams['est_promedio_cobro']) || 0,
+                    totalCobros: parseInt(urlParams['est_total_cobros']) || 0,
+                    totalMonto: parseFloat(urlParams['est_total_monto']) || 0
+                },
+                
+                // ===== TOTALES =====
+                totalIngresos: parseFloat(urlParams['total_ingresos']) || 0
+            };
+            
+            // Actualizar fecha en el header
+            document.getElementById('fechaHeader').textContent = '📅 ' + datosInforme.fecha;
+            
+            mostrarResumen();
+            ticketTexto = generarTicketInforme();
+            document.getElementById('ticketPreview').innerText = ticketTexto;
+            
+            return datosInforme.fecha !== null;
+        }
+        
+        // ============================================================
+        // MOSTRAR RESUMEN DEL INFORME (ACTUALIZADO)
+        // ============================================================
+        function mostrarResumen() {
+            var container = document.getElementById('infoResumen');
+            
+            var ventaTotal = formatearMonto(datosInforme.ventas.total);
+            var recaudoTotal = formatearMonto(datosInforme.recaudo.total);
+            var egresoTotal = formatearMonto(datosInforme.totalEgresos);
+            var totalGeneral = formatearMonto(datosInforme.totalIngresos);
+            var facturacion = formatearMonto(datosInforme.ventas.facturacion);
+            var promedio = formatearMonto(datosInforme.estadisticas.promedioCobro);
+            
+            container.innerHTML = `
+                <!-- FILA 1: Ventas y Recaudo -->
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+                    <span><strong>📊 VENTAS:</strong> <span style="color:#1a472a;">${ventaTotal}</span></span>
+                    <span><strong>💰 RECAUDO:</strong> <span style="color:#0d6efd;">${recaudoTotal}</span></span>
+                </div>
+                
+                <!-- FILA 2: Egresos y Total -->
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-top:4px;">
+                    <span><strong>💸 EGRESOS:</strong> <span style="color:#dc3545;">${egresoTotal}</span></span>
+                    <span><strong>🏦 TOTAL:</strong> <span style="color:#6f42c1; font-weight:bold;">${totalGeneral}</span></span>
+                </div>
+                
+                <!-- FILA 3: Facturación -->
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-top:4px;">
+                    <span><strong>📄 FACTURACIÓN:</strong> <span style="color:#1a472a;">${facturacion}</span></span>
+                    <span><strong>📝 COBROS:</strong> <span style="color:#8b5cf6;">${datosInforme.estadisticas.totalCobros || 0}</span></span>
+                </div>
+                
+                <!-- FILA 4: Estadísticas (NUEVO) -->
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-top:4px; padding-top:6px; border-top:1px solid #e2e8f0;">
+                    <span><strong>👥 CLIENTES:</strong> <span style="color:#8b5cf6;">${datosInforme.estadisticas.clientesAtendidos || 0}</span></span>
+                    <span><strong>📊 PROMEDIO:</strong> <span style="color:#8b5cf6;">${promedio}</span></span>
+                    <span><strong>📋 REGISTROS:</strong> <span style="color:#8b5cf6;">${datosInforme.recaudo.registrosABC + datosInforme.recaudo.registrosARC}</span></span>
+                </div>
+                
+                <!-- FILA 5: Detalle de egresos -->
+                <div style="margin-top:6px; font-size:11px; color:#64748b;">
+                    ${datosInforme.egresos.length} tipos de gastos registrados
+                    ${datosInforme.egresos.length > 0 ? ' | ' + datosInforme.egresos.map(e => e.nombre || e.codigo).join(', ') : ''}
+                </div>
+            `;
+        }
+        
+        // ============================================================
+        // GENERAR TICKET DEL INFORME DIARIO (ACTUALIZADO)
+        // ============================================================
+        function generarTicketInforme() {
+            var ancho = 48;
+            var t = '';
+            
+            // ========== ENCABEZADO ==========
+            t += '_'.repeat(ancho) + '\n';
+            t += centerText('INFORME DE CAJA MENOR', ancho) + '\n';
+            t += centerText('SICSa - Sistema de Cobros', ancho) + '\n';
+            t += centerText('FECHA: ' + datosInforme.fecha, ancho) + '\n';
+            t += '_'.repeat(ancho) + '\n\n';
+            
+            // ========== VENTAS DEL DÍA ==========
+            t += centerText('📊 VENTAS DEL DÍA', ancho) + '\n';
+            t += '─'.repeat(ancho) + '\n';
+            t += padRight('  FACTURACIÓN', 28) + padLeft(formatearMonto(datosInforme.ventas.facturacion), 20) + '\n';
+            t += padRight('  VENTA PEREIRA', 28) + padLeft(formatearMonto(datosInforme.ventas.pereira), 20) + '\n';
+            t += padRight('  VENTA MANIZALES', 28) + padLeft(formatearMonto(datosInforme.ventas.manizales), 20) + '\n';
+            t += padRight('  VENTA SUPIA', 28) + padLeft(formatearMonto(datosInforme.ventas.supia), 20) + '\n';
+            t += '─'.repeat(ancho) + '\n';
+            t += padRight('  TOTAL VENTA DIA', 28) + padLeft(formatearMonto(datosInforme.ventas.total), 20) + '\n';
+            t += '_'.repeat(ancho) + '\n\n';
+            
+            // ========== RECAUDO DEL DÍA ==========
+            t += centerText('💰 RECAUDO DEL DÍA', ancho) + '\n';
+            t += '─'.repeat(ancho) + '\n';
+            t += padRight('  INGRESO CAJA (ABC)', 28) + padLeft(formatearMonto(datosInforme.recaudo.abc), 20) + '\n';
+            t += padRight('  INGRESOS CARTERA (ARC)', 28) + padLeft(formatearMonto(datosInforme.recaudo.arc), 20) + '\n';
+            t += padRight('  REGISTROS ABC', 28) + padLeft(String(datosInforme.recaudo.registrosABC), 20) + '\n';
+            t += padRight('  REGISTROS ARC', 28) + padLeft(String(datosInforme.recaudo.registrosARC), 20) + '\n';
+            t += '─'.repeat(ancho) + '\n';
+            t += padRight('  TOTAL RECAUDO', 28) + padLeft(formatearMonto(datosInforme.recaudo.total), 20) + '\n';
+            t += '_'.repeat(ancho) + '\n\n';
+            
+            // ========== EGRESOS DEL DÍA ==========
+            t += centerText('💸 EGRESOS DEL DÍA', ancho) + '\n';
+            t += '─'.repeat(ancho) + '\n';
+            
+            if (datosInforme.egresos.length === 0) {
+                t += padRight('  NO HAY EGRESOS REGISTRADOS', ancho) + '\n';
+            } else {
+                for (var i = 0; i < datosInforme.egresos.length; i++) {
+                    var egreso = datosInforme.egresos[i];
+                    var nombre = egreso.nombre || egreso.codigo || 'Sin nombre';
+                    var monto = egreso.monto || 0;
+                    var desc = egreso.descripcion || '';
+                    var codigo = egreso.codigo || egreso.cod1 || '';
+                    var trabajador = egreso.trabajador || 'Sistema';
+                    
+                    t += padRight('  ' + codigo + ' - ' + nombre, 28) + padLeft(formatearMonto(monto), 20) + '\n';
+                    t += padRight('    (' + trabajador + ')', 28) + padLeft('', 20) + '\n';
+                    if (desc) {
+                        var lineas = wrapText('     ' + desc, ancho - 4);
+                        for (var j = 0; j < lineas.length; j++) {
+                            t += '  ' + lineas[j] + '\n';
+                        }
+                    }
+                }
+            }
+            t += '─'.repeat(ancho) + '\n';
+            t += padRight('  TOTAL EGRESOS', 28) + padLeft(formatearMonto(datosInforme.totalEgresos), 20) + '\n';
+            t += '_'.repeat(ancho) + '\n\n';
+            
+            // ========== ESTADÍSTICAS (NUEVO) ==========
+            t += centerText('📊 ESTADÍSTICAS DEL DÍA', ancho) + '\n';
+            t += '─'.repeat(ancho) + '\n';
+            t += padRight('  Clientes atendidos', 28) + padLeft(String(datosInforme.estadisticas.clientesAtendidos || 0), 20) + '\n';
+            t += padRight('  Promedio por cobro', 28) + padLeft(formatearMonto(datosInforme.estadisticas.promedioCobro || 0), 20) + '\n';
+            t += padRight('  Total transacciones', 28) + padLeft(String(datosInforme.estadisticas.totalCobros || 0), 20) + '\n';
+            t += padRight('  Total monto cobrado', 28) + padLeft(formatearMonto(datosInforme.estadisticas.totalMonto || 0), 20) + '\n';
+            t += '_'.repeat(ancho) + '\n\n';
+            
+            // ========== TOTAL GENERAL ==========
+            t += centerText('🏦 TOTAL GENERAL', ancho) + '\n';
+            t += '═'.repeat(ancho) + '\n';
+            t += padRight('  TOTAL INGRESOS', 28) + padLeft(formatearMonto(datosInforme.totalIngresos), 20) + '\n';
+            t += '═'.repeat(ancho) + '\n\n';
+            
+            // ========== FIRMAS ==========
+            t += centerText('FIRMAS DE AUTORIZACIÓN', ancho) + '\n';
+            t += '_'.repeat(ancho) + '\n\n\n';
+            
+            t += centerText('________________________________________', ancho) + '\n';
+            t += centerText('FIRMA QUIEN RECIBE', ancho) + '\n\n';
+            t += centerText('Nombre: ___________________', ancho) + '\n';
+            t += centerText('CC: ___________________', ancho) + '\n\n\n';
+            
+            t += centerText('________________________________________', ancho) + '\n';
+            t += centerText('FIRMA QUIEN ENTREGA', ancho) + '\n\n';
+            t += centerText('Nombre: ___________________', ancho) + '\n';
+            t += centerText('CC: ___________________', ancho) + '\n\n';
+            
+            t += '_'.repeat(ancho) + '\n';
+            
+            // ========== PIE DE PÁGINA ==========
+            t += centerText('Este documento es una constancia física del', ancho) + '\n';
+            t += centerText('movimiento realizado. Sirve como soporte', ancho) + '\n';
+            t += '_'.repeat(ancho) + '\n';
+            t += centerText('SICSa - Sistema de Cobros', ancho) + '\n';
+            t += centerText('www.sicsa.com', ancho) + '\n';
+            t += '_'.repeat(ancho) + '\n';
+            
+            return t;
+        }
+        
+        // ============================================================
+        // FUNCIONES AUXILIARES
+        // ============================================================
+        function wrapText(texto, maxLen) {
+            if (!texto) return [];
+            var palabras = texto.split(' ');
+            var lineas = [];
+            var lineaActual = '';
+    
+            for (var i = 0; i < palabras.length; i++) {
+                var palabra = palabras[i];
+                if ((lineaActual + ' ' + palabra).length <= maxLen) {
+                    lineaActual += (lineaActual ? ' ' : '') + palabra;
+                } else {
+                    if (lineaActual) lineas.push(lineaActual);
+                    lineaActual = palabra;
+                }
+            }
+            if (lineaActual) lineas.push(lineaActual);
+    
+            return lineas;
+        }
+        
+        function centerText(texto, ancho) {
+            if (texto.length >= ancho) return texto.substring(0, ancho);
+            var espacios = ancho - texto.length;
+            var izquierda = Math.floor(espacios / 2);
+            return ' '.repeat(izquierda) + texto + ' '.repeat(espacios - izquierda);
+        }
+        
+        function padRight(texto, ancho) {
+            var str = String(texto);
+            if (str.length >= ancho) return str.substring(0, ancho);
+            return str + ' '.repeat(ancho - str.length);
+        }
+        
+        function padLeft(texto, ancho) {
+            var str = String(texto);
+            if (str.length >= ancho) return str.substring(0, ancho);
+            return ' '.repeat(ancho - str.length) + str;
+        }
+        
+        function formatearMonto(valor) {
+            var num = parseFloat(valor);
+            if (isNaN(num)) return '$0';
+            return '$' + num.toLocaleString('es-CO', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+        }
+        
+        function escapeHtml(texto) {
+            if (!texto) return '';
+            return texto.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        // ============================================================
+        // FUNCIÓN PRINCIPAL: IMPRIMIR CON RAWBT
+        // ============================================================
+        function imprimirConRawBT() {
+            var statusDiv = document.getElementById('status');
+            
+            if (!ticketTexto) {
+                statusDiv.innerHTML = '❌ Error: No hay ticket para imprimir';
+                statusDiv.className = 'status status-error';
+                return;
+            }
+            
+            var ticketCodificado = encodeURIComponent(ticketTexto);
+            var intentUri = 'intent:' + ticketCodificado + '#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;';
+            
+            statusDiv.innerHTML = '📤 Abriendo RawBT...';
+            statusDiv.className = 'status status-info';
+            
+            window.location.href = intentUri;
+            
+            setTimeout(function() {
+                statusDiv.innerHTML = '✅ Ticket enviado a RawBT. La ventana se cerrará en 3 segundos.';
+                statusDiv.className = 'status status-success';
+            }, 1500);
+            
+            setTimeout(function() {
+                window.close();
+            }, 4000);
+        }
+        
+        // ============================================================
+        // COPIAR TICKET AL PORTAPAPELES
+        // ============================================================
+        function copiarTicket() {
+            if (!ticketTexto) {
+                alert('No hay ticket para copiar');
+                return;
+            }
+            
+            navigator.clipboard.writeText(ticketTexto).then(function() {
+                var statusDiv = document.getElementById('status');
+                statusDiv.innerHTML = '✅ Ticket copiado al portapapeles';
+                statusDiv.className = 'status status-success';
+                
+                setTimeout(function() {
+                    statusDiv.innerHTML = '⚪ Listo para imprimir';
+                    statusDiv.className = 'status status-info';
+                }, 2000);
+            }).catch(function() {
+                var statusDiv = document.getElementById('status');
+                statusDiv.innerHTML = '❌ Error al copiar. Copia manualmente.';
+                statusDiv.className = 'status status-error';
+            });
+        }
+        
+        // ============================================================
+        // CERRAR VENTANA
+        // ============================================================
+        function cerrarVentana() {
+            window.close();
+        }
+        
+        // ============================================================
+        // INICIALIZAR TODO CUANDO CARGA LA PÁGINA
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            var hayDatos = leerDatosURL();
+            
+            if (!hayDatos) {
+                document.getElementById('ticketPreview').innerHTML = '⚠️ No hay datos de informe para mostrar';
+                document.getElementById('status').innerHTML = '⚠️ Esperando datos del sistema de cobros...';
+                document.getElementById('status').className = 'status status-warning';
+            }
+            
+            document.getElementById('btnImprimir').onclick = imprimirConRawBT;
+            document.getElementById('btnCopiar').onclick = copiarTicket;
+            document.getElementById('btnCerrar').onclick = cerrarVentana;
+        });
+    </script>
+</body>
+</html>
