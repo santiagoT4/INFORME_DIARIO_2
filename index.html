@@ -461,29 +461,29 @@
             
             // ========== VENTAS DEL DÍA ==========
             t += centerText('📊 VENTAS DEL DÍA', ancho) + '\n';
-            t += '─'.repeat(ancho) + '\n';
+            t += '_'.repeat(ancho) + '\n';
             t += padRight('  FACTURACIÓN', 28) + padLeft(formatearMonto(datosInforme.ventas.facturacion), 20) + '\n\n';
             t += padRight('  VENTA PEREIRA', 28) + padLeft(formatearMonto(datosInforme.ventas.pereira), 20) + '\n';
             t += padRight('  VENTA MANIZALES', 28) + padLeft(formatearMonto(datosInforme.ventas.manizales), 20) + '\n';
             t += padRight('  VENTA SUPIA', 28) + padLeft(formatearMonto(datosInforme.ventas.supia), 20) + '\n';
-            t += '─'.repeat(ancho) + '\n';
+            t += '_'.repeat(ancho) + '\n';
             t += padRight('  NUMERO DE VENTAS', 28) + padLeft(String(datosInforme.ventas.total), 20) + '\n';
             t += '_'.repeat(ancho) + '\n\n';
             
             // ========== RECAUDO DEL DÍA ==========
             t += centerText('💰 RECAUDO DEL DÍA', ancho) + '\n';
-            t += '─'.repeat(ancho) + '\n';
+            t += '_'.repeat(ancho) + '\n';
             t += padRight('  INGRESO CAJA (ABC)', 28) + padLeft(formatearMonto(datosInforme.recaudo.abc), 20) + '\n';
             t += padRight('  INGRESOS CARTERA (ARC)', 28) + padLeft(formatearMonto(datosInforme.recaudo.arc), 20) + '\n';
             t += padRight('  REGISTROS ABC', 28) + padLeft(String(datosInforme.recaudo.registrosABC), 20) + '\n';
             t += padRight('  REGISTROS ARC', 28) + padLeft(String(datosInforme.recaudo.registrosARC), 20) + '\n';
-            t += '─'.repeat(ancho) + '\n';
+            t += '_'.repeat(ancho) + '\n';
             t += padRight('  TOTAL RECAUDO', 28) + padLeft(formatearMonto(datosInforme.recaudo.total), 20) + '\n';
             t += '_'.repeat(ancho) + '\n\n';
             
             // ========== EGRESOS DEL DÍA (ADAPTADO) ==========
             t += centerText('💸 EGRESOS DEL DÍA', ancho) + '\n';
-            t += '─'.repeat(ancho) + '\n';
+            t += '_'.repeat(ancho) + '\n';
             
             if (datosInforme.egresos.length === 0) {
                 t += padRight('  NO HAY EGRESOS REGISTRADOS', ancho) + '\n';
@@ -536,12 +536,12 @@
                     }
                     
                     // ===== TOTAL DEL CÓDIGO =====
-                    t += '  ' + '─'.repeat(ancho - 4) + '\n';
+                    t += '  ' + '_'.repeat(ancho - 4) + '\n';
                     t += padRight('  TOTAL ' + codigo, 28) + padLeft(formatearMonto(montoTotal), 20) + '\n';
                     t += '\n';
                 }
             }
-            t += '─'.repeat(ancho) + '\n';
+            t += '_'.repeat(ancho) + '\n';
             t += padRight('  TOTAL EGRESOS', 28) + padLeft(formatearMonto(datosInforme.totalEgresos), 20) + '\n';
             t += '_'.repeat(ancho) + '\n\n';
             
@@ -671,11 +671,11 @@
             setTimeout(function() {
                 statusDiv.innerHTML = '✅ Ticket enviado a RawBT. La ventana se cerrará en 3 segundos.';
                 statusDiv.className = 'status status-success';
-            }, 1500);
+            }, 4500);
             
             setTimeout(function() {
                 window.close();
-            }, 4000);
+            }, 12000);
         }
         
         // ============================================================
